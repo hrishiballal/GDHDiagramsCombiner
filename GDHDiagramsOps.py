@@ -1,6 +1,5 @@
 import requests, json, GeodesignHub
-import shapelyHelper, diagramsJoin
-
+import shapelyHelper
 import logging
 from shapely.geometry.base import BaseGeometry
 from shapely.geometry import shape, mapping, shape, asShape
@@ -8,9 +7,9 @@ from shapely.geometry import MultiPolygon, MultiPoint, MultiLineString
 from shapely import speedups
 import shapelyHelper
 from shapely.ops import cascaded_union
-
 import geobuf
-from io import BytesIO
+
+
 class DiagramCombiner():
 	''' A class to conduct basic (6) GIS operations during copy diagrams. '''
 
@@ -66,14 +65,14 @@ class DiagramCombiner():
 
 
 if __name__ == "__main__":
-	firstAPIHelper = GeodesignHub.GeodesignHubClient(url = 'https://www.geodesignhub.com/api/v1/', project_id='d962fdcb18d9334ac2', token='d75393abe78ae71c87750ef71c2ac0bf2afeb093')
+	firstAPIHelper = GeodesignHub.GeodesignHubClient(url = 'http://local.dev:8000/api/v1/', project_id='c7bfb800a36223da', token='5d72a5465bc8a61bb6dd02457cbf97150735bfbf')
 
-	firstDiagID = 32 # diagram to be downloaded
+	firstDiagID = 51 # diagram to be downloaded
 	r1 = firstAPIHelper.get_diagram_geoms(firstDiagID)
 
-	secondAPIHelper = GeodesignHub.GeodesignHubClient(url = 'https://www.geodesignhub.com/api/v1/', project_id='d962fdcb18d2394ac2', token='d75393abe78ae71c87750ef71c2ac0bf2afeb093')
+	secondAPIHelper = GeodesignHub.GeodesignHubClient(url = 'http://local.dev:8000/api/v1/', project_id='c7bfb800a36223da', token='5d72a5465bc8a61bb6dd02457cbf97150735bfbf')
 
-	secondDiagID = 32 # diagram to be downloaded
+	secondDiagID = 59 # diagram to be downloaded
 	r2 = secondAPIHelper.get_diagram_geoms(secondDiagID)
 
 	if r1.status_code == 200:
@@ -84,11 +83,11 @@ if __name__ == "__main__":
 		op = json.loads(r2.text)
 		secondgeoms = op['geojson']
 
-	myDiagramCombiner = self.DiagramCombiner()
+	myDiagramCombiner = DiagramCombiner()
 	combinedGJ = myDiagramCombiner.processGeoms(firstgeoms, secondgeoms, 'stitch')
 
-	print combinedGJ
+	# print json.dumps(combinedGJ)
 
-	targetReqID= 12
-	upload = myAPIHelper.post_as_diagram(geoms = combinedGJ, projectorpolicy= 'project',featuretype = 'polygon', description= 'Original Corridoor', reqid = targetReqID)
+	targetReqID= 27
+	upload = firstAPIHelper.post_as_diagram(geoms = combinedGJ, projectorpolicy= 'project',featuretype = 'polygon', description= 'Combined Corridoor', reqid = targetReqID)
 	print upload.text
