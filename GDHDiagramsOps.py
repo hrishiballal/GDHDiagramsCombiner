@@ -31,7 +31,41 @@ class DiagramCombiner():
 		cf['properties']= {}
 		cf['geometry']= j
 		combinedGeoms.append(cf)
-		return combinedGeoms		
+		return combinedGeoms	
+
+	def combineSubtractDiagrams(self, firstGeoms, secondGeoms):
+		finalGeoms = []
+		
+		for firstFeat in firstGeoms:
+			cf ={}
+			cfeat = json.loads(shapelyHelper.export_to_JSON(firstFeat))
+			cf['type']= 'Feature'
+			cf['properties']= {}
+			cf['geometry']= cfeat
+			finalGeoms.append(cf)
+			for secondFeat in secondGeoms:
+				
+				diff = secondFeat.difference(firstFeat)
+				if diff: 
+					scf = {}
+					d= json.loads(shapelyHelper.export_to_JSON(diff))
+					if (d['type']=='MultiPolygon'):
+						
+						for curCoords in d['coordinates']:
+							f = {}
+							f['type']= 'Feature'
+							f['properties']= {}
+							f['geometry']= {'type':'Polygon', 'coordinates':curCoords}
+							finalGeoms.append(f)
+
+					else:
+						scf['type']= 'Feature'
+						scf['properties']= {}
+						scf['geometry']= d
+						finalGeoms.append(scf)
+
+
+		return finalGeoms		
 
 	def processGeoms(self, firstDiagram, secondDiagram, mode):
 
@@ -46,6 +80,17 @@ class DiagramCombiner():
 
 			combinedGeoms = firstGeoms + secondGeoms
 			newGeoms = self.combineDiagrams(combinedGeoms)
+
+		if (mode == 'combinesubstract'):
+			firstGeoms =[]
+			secondGeoms =[]
+			for curFeature in firstDiagram['features']:
+				firstGeoms, errorCounter = self.genFeature(curFeature['geometry'],allGeoms=firstGeoms, errorCounter=0)
+
+			for curFeature in secondDiagram['features']:
+				secondGeoms, errorCounter = self.genFeature(curFeature['geometry'],allGeoms=secondGeoms, errorCounter=0)
+
+			newGeoms = self.combineSubtractDiagrams(firstGeoms,secondGeoms)
 
 		elif (mode =='stitch'):
 			newGeoms = []
@@ -67,7 +112,7 @@ class DiagramCombiner():
 if __name__ == "__main__":
 	firstAPIHelper = GeodesignHub.GeodesignHubClient(url = 'http://local.dev:8000/api/v1/', project_id='c7bfb800a36223da', token='5d72a5465bc8a61bb6dd02457cbf97150735bfbf')
 
-	firstDiagID = 51 # diagram to be downloaded
+	firstDiagID = 53 # diagram to be downloaded
 	r1 = firstAPIHelper.get_diagram_geoms(firstDiagID)
 
 	secondAPIHelper = GeodesignHub.GeodesignHubClient(url = 'http://local.dev:8000/api/v1/', project_id='c7bfb800a36223da', token='5d72a5465bc8a61bb6dd02457cbf97150735bfbf')
@@ -84,10 +129,10 @@ if __name__ == "__main__":
 		secondgeoms = op['geojson']
 
 	myDiagramCombiner = DiagramCombiner()
-	combinedGJ = myDiagramCombiner.processGeoms(firstgeoms, secondgeoms, 'stitch')
+	combinedGJ = myDiagramCombiner.processGeoms(firstgeoms, secondgeoms, 'combinesubstract')
 
-	# print json.dumps(combinedGJ)
+	print json.dumps(combinedGJ)
 
-	targetReqID= 27
-	upload = firstAPIHelper.post_as_diagram(geoms = combinedGJ, projectorpolicy= 'project',featuretype = 'polygon', description= 'Combined Corridoor', reqid = targetReqID)
-	print upload.text
+	# targetReqID= 27
+	# upload = firstAPIHelper.post_as_diagram(geoms = combinedGJ, projectorpolicy= 'project',featuretype = 'polygon', description= 'Combined Corridoor', reqid = targetReqID)
+	# print upload.text
