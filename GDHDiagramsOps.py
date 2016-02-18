@@ -31,11 +31,11 @@ class DiagramCombiner():
 		cf['properties']= {}
 		cf['geometry']= j
 		combinedGeoms.append(cf)
-		return combinedGeoms	
+		return combinedGeoms
 
 	def combineSubtractDiagrams(self, firstGeoms, secondGeoms):
 		finalGeoms = []
-		
+
 		for firstFeat in firstGeoms:
 			cf ={}
 			cfeat = json.loads(shapelyHelper.export_to_JSON(firstFeat))
@@ -44,13 +44,13 @@ class DiagramCombiner():
 			cf['geometry']= cfeat
 			finalGeoms.append(cf)
 			for secondFeat in secondGeoms:
-				
+
 				diff = secondFeat.difference(firstFeat)
-				if diff: 
+				if diff:
 					scf = {}
 					d= json.loads(shapelyHelper.export_to_JSON(diff))
 					if (d['type']=='MultiPolygon'):
-						
+
 						for curCoords in d['coordinates']:
 							f = {}
 							f['type']= 'Feature'
@@ -65,7 +65,7 @@ class DiagramCombiner():
 						finalGeoms.append(scf)
 
 
-		return finalGeoms		
+		return finalGeoms
 
 	def processGeoms(self, firstDiagram, secondDiagram, mode):
 
@@ -112,7 +112,7 @@ class DiagramCombiner():
 if __name__ == "__main__":
 	firstAPIHelper = GeodesignHub.GeodesignHubClient(url = 'http://local.dev:8000/api/v1/', project_id='c7bfb800a36223da', token='5d72a5465bc8a61bb6dd02457cbf97150735bfbf')
 
-	firstDiagID = 53 # diagram to be downloaded
+	firstDiagID = 51 # diagram to be downloaded
 	r1 = firstAPIHelper.get_diagram_geoms(firstDiagID)
 
 	secondAPIHelper = GeodesignHub.GeodesignHubClient(url = 'http://local.dev:8000/api/v1/', project_id='c7bfb800a36223da', token='5d72a5465bc8a61bb6dd02457cbf97150735bfbf')

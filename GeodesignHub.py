@@ -14,6 +14,13 @@ class GeodesignHubClient():
 		r = requests.get(securl, headers=headers)
 		return r
 
+	def get_constraints_geoms(self):
+		''' Create a requests object with correct headers and creds. '''
+		securl = self.securl+ 'projects'+ '/' + self.projectid + '/' +'constraints' + '/'
+		headers = {'Authorization': 'Token '+ self.token}
+		r = requests.get(securl, headers=headers)
+		return r
+
 	def post_as_diagram(self,geoms, projectorpolicy, featuretype, description, reqid ):
 		''' Create a requests object with correct headers and creds. '''
 		securl = self.securl+ 'projects'+ '/' + self.projectid + '/' +'requirements'+'/'+ str(reqid) + '/'+ 'add' +'/' + projectorpolicy +'/'
