@@ -1,5 +1,5 @@
 import requests, json, GeodesignHub
-import shapelyHelper
+import shapelyHelper, config
 import logging
 from shapely.geometry.base import BaseGeometry
 from shapely.geometry import shape, mapping, shape, asShape
@@ -110,12 +110,12 @@ class DiagramCombiner():
 
 
 if __name__ == "__main__":
-	firstAPIHelper = GeodesignHub.GeodesignHubClient(url = 'http://local.dev:8000/api/v1/', project_id='c7bfb800a36223da', token='5d72a5465bc8a61bb6dd02457cbf97150735bfbf')
+	firstAPIHelper = GeodesignHub.GeodesignHubClient(url = config.apisettings['serviceurl'], project_id=config.apisettings['projectid'], token=config.apisettings['apitoken'])
 
 	firstDiagID = 51 # diagram to be downloaded
 	r1 = firstAPIHelper.get_diagram_geoms(firstDiagID)
 
-	secondAPIHelper = GeodesignHub.GeodesignHubClient(url = 'http://local.dev:8000/api/v1/', project_id='c7bfb800a36223da', token='5d72a5465bc8a61bb6dd02457cbf97150735bfbf')
+	secondAPIHelper = GeodesignHub.GeodesignHubClient(url = config.apisettings['serviceurl'], project_id=config.apisettings['projectid'], token=config.apisettings['apitoken'])
 
 	secondDiagID = 59 # diagram to be downloaded
 	r2 = secondAPIHelper.get_diagram_geoms(secondDiagID)
