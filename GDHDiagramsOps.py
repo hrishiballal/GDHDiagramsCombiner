@@ -113,12 +113,12 @@ if __name__ == "__main__":
 	firstAPIHelper = GeodesignHub.GeodesignHubClient(url = config.apisettings['serviceurl'], project_id=config.apisettings['projectid'], token=config.apisettings['apitoken'])
 
 	firstDiagID = 51 # diagram to be downloaded
-	r1 = firstAPIHelper.get_diagram_geoms(firstDiagID)
+	r1 = firstAPIHelper.get_diagram(firstDiagID)
 
 	secondAPIHelper = GeodesignHub.GeodesignHubClient(url = config.apisettings['serviceurl'], project_id=config.apisettings['projectid'], token=config.apisettings['apitoken'])
 
 	secondDiagID = 59 # diagram to be downloaded
-	r2 = secondAPIHelper.get_diagram_geoms(secondDiagID)
+	r2 = secondAPIHelper.get_diagram(secondDiagID)
 
 	if r1.status_code == 200:
 		op = json.loads(r1.text)
